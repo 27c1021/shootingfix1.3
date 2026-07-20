@@ -37,8 +37,9 @@ import {
 const SENSITIVITY_X_DEGREES = 40;
 const SENSITIVITY_Y_DEGREES = 35;
 
-/* 左右の傾きと照準の動きが逆に感じる場合はtrueに変更 */
-const MIRROR_X = true;
+/* 傾きと照準の動きが逆に感じる場合はtrueに変更 */
+const MIRROR_X = false;
+const MIRROR_Y = false;
 
 /*
    Firebaseへ照準情報を送信する間隔(ミリ秒)。
@@ -177,6 +178,10 @@ function computeAim() {
         deltaGamma = -deltaGamma;
     }
 
+    if (MIRROR_Y) {
+        deltaBeta = -deltaBeta;
+    }
+    
     const rawX = 0.5 + (deltaGamma / SENSITIVITY_X_DEGREES);
     const rawY = 0.5 + (deltaBeta / SENSITIVITY_Y_DEGREES);
 
