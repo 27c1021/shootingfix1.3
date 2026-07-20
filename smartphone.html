@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="
+            width=device-width,
+            initial-scale=1.0,
+            maximum-scale=1.0,
+            user-scalable=no
+        "
+    >
+
+    <title>バルーンシューター</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+
+            margin: 0;
+            padding: 0;
+
+            touch-action: manipulation;
+
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #32824a,
+                    #0c2e1c 72%
+                );
+
+            font-family:
+                "Arial Rounded MT Bold",
+                "Hiragino Maru Gothic ProN",
+                sans-serif;
+
+            color: white;
+        }
+
+        #controller,
+        #roomSetup {
+            display: flex;
+
+            width: 100%;
+            height: 100%;
+
+            padding: 30px 22px;
+
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+
+            font-size:
+                clamp(25px, 8vw, 42px);
+
+            text-align: center;
+
+            text-shadow:
+                0 4px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        #guide {
+            margin-bottom: 18px;
+
+            font-size: 17px;
+
+            text-align: center;
+
+            opacity: 0.9;
+        }
+
+        .gyroButton {
+            width: 100%;
+            max-width: 320px;
+
+            margin-bottom: 12px;
+            padding: 14px 10px;
+
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 14px;
+
+            background: rgba(255, 255, 255, 0.12);
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .gyroButton:disabled {
+            opacity: 0.45;
+        }
+
+        .gyroButton.done {
+            background: rgba(125, 255, 176, 0.22);
+            border-color: #7dffb0;
+        }
+
+        #aimBox {
+            position: relative;
+
+            width: min(60vw, 220px);
+            height: min(60vw, 220px);
+
+            margin-bottom: 18px;
+
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        #aimBox::before,
+        #aimBox::after {
+            content: "";
+
+            position: absolute;
+
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        #aimBox::before {
+            top: 50%;
+            left: 0;
+
+            width: 100%;
+            height: 1px;
+        }
+
+        #aimBox::after {
+            top: 0;
+            left: 50%;
+
+            width: 1px;
+            height: 100%;
+        }
+
+        #aimDot {
+            position: absolute;
+
+            width: 22px;
+            height: 22px;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
+
+            border-radius: 50%;
+
+            background: #ff8a2b;
+            box-shadow: 0 0 12px rgba(255, 138, 43, 0.9);
+
+            transition: background 0.15s ease;
+        }
+
+        #aimDot.centered {
+            background: #7dffb0;
+            box-shadow: 0 0 12px rgba(125, 255, 176, 0.9);
+        }
+
+        #gyroStatus {
+            margin-bottom: 18px;
+
+            font-size: 14px;
+
+            text-align: center;
+
+            opacity: 0.85;
+        }
+
+        #roomBadge {
+            margin-bottom: 14px;
+
+            padding: 6px 16px;
+
+            border: 2px solid rgba(255, 255, 255, 0.75);
+            border-radius: 18px;
+
+            background: rgba(0, 0, 0, 0.3);
+
+            font-size: 14px;
+            font-weight: bold;
+
+            letter-spacing: 2px;
+        }
+
+        #fireButton {
+            width: min(68vw, 290px);
+            height: min(68vw, 290px);
+
+            border: 9px solid white;
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 40% 32%,
+                    #ffba56,
+                    #f36c20 52%,
+                    #b93412 100%
+                );
+
+            color: white;
+
+            font-size:
+                clamp(38px, 12vw, 63px);
+
+            font-weight: bold;
+
+            letter-spacing: 2px;
+
+            text-shadow:
+                0 4px 3px rgba(87, 25, 4, 0.5);
+
+            box-shadow:
+                0 13px 0 #7d240d,
+                0 20px 36px rgba(0, 0, 0, 0.48),
+                inset 0 8px 9px rgba(255, 255, 255, 0.3);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.08s ease,
+                box-shadow 0.08s ease;
+        }
+
+        #fireButton:active,
+        #fireButton.pressed {
+            transform: translateY(10px) scale(0.95);
+
+            box-shadow:
+                0 3px 0 #7d240d,
+                0 8px 15px rgba(0, 0, 0, 0.35),
+                inset 0 5px 8px rgba(255, 255, 255, 0.2);
+        }
+
+        #fireButton:disabled {
+            filter: grayscale(0.8);
+
+            opacity: 0.6;
+        }
+
+        #status {
+            margin-top: 38px;
+
+            min-width: 210px;
+
+            padding: 11px 20px;
+
+            border: 2px solid rgba(255, 255, 255, 0.75);
+            border-radius: 22px;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            font-size: 17px;
+            font-weight: bold;
+
+            text-align: center;
+        }
+
+        #status.connected {
+            color: #baffb9;
+        }
+
+        #status.error {
+            color: #ffb4b4;
+        }
+
+        /* ============ 接続コード入力画面 ============ */
+
+        #roomSetup {
+            display: none;
+        }
+
+        #roomForm {
+            display: flex;
+
+            flex-direction: column;
+            align-items: center;
+
+            width: 100%;
+            max-width: 320px;
+        }
+
+        #roomCodeInput {
+            width: 100%;
+
+            margin-bottom: 14px;
+            padding: 16px;
+
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 14px;
+
+            background: rgba(255, 255, 255, 0.12);
+
+            color: white;
+
+            font-size: 32px;
+            font-weight: bold;
+
+            letter-spacing: 8px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        #roomCodeInput::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+
+            letter-spacing: 2px;
+        }
+
+        #connectRoomButton {
+            width: 100%;
+
+            padding: 14px 10px;
+
+            border: none;
+            border-radius: 14px;
+
+            background: #f36c20;
+
+            color: white;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        #roomError {
+            min-height: 20px;
+            margin-top: 12px;
+
+            color: #ffb4b4;
+
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- 接続コード入力画面（QRコードなしで開いた場合に表示） -->
+    <main id="roomSetup">
+
+        <h1>バルーンシューター</h1>
+
+        <p id="guide">
+            パソコン画面に表示されている<br>
+            せつぞくコードを入力してください
+        </p>
+
+        <form id="roomForm">
+
+            <input
+                id="roomCodeInput"
+                type="text"
+                inputmode="text"
+                maxlength="4"
+                placeholder="XXXX"
+                autocomplete="off"
+                autocapitalize="characters"
+            >
+
+            <button id="connectRoomButton" type="submit">
+                接続する
+            </button>
+
+        </form>
+
+        <div id="roomError"></div>
+
+    </main>
+
+    <!-- コントローラー画面（コードが確定してから表示） -->
+    <main id="controller" style="display: none;">
+
+        <h1>
+            バルーンシューター
+        </h1>
+
+        <div id="roomBadge">
+            コード：<span id="roomBadgeText">----</span>
+        </div>
+
+        <p id="guide">
+            スマホを画面に向けてかまえ、<br>
+            傾けてねらいを動かそう！
+        </p>
+
+        <button
+            id="startGyroButton"
+            class="gyroButton"
+        >
+            ① ジャイロを有効にする
+        </button>
+
+        <button
+            id="recalibrateButton"
+            class="gyroButton"
+            disabled
+        >
+            ② 今の向きを中心に合わせる
+        </button>
+
+        <div id="aimBox">
+            <div id="aimDot"></div>
+        </div>
+
+        <div id="gyroStatus">
+            ジャイロ：未開始
+        </div>
+
+        <button
+            id="fireButton"
+            disabled
+        >
+            発射
+        </button>
+
+        <div id="status">
+            未接続
+        </div>
+
+    </main>
+
+    <script
+        type="module"
+        src="phone.js?v=1"
+    ></script>
+
+</body>
+
+</html>

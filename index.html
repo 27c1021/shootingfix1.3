@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ジャングルバルーンシューティング</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main id="game">
+
+        <!-- タイトル -->
+        <div id="title">
+            ジャングルバルーンシューティング
+        </div>
+
+        <!-- 時間とスコア -->
+        <div id="info">
+
+            <div>
+                のこり
+                <span id="time">20</span>
+                びょう
+            </div>
+
+            <div>
+                スコア
+                <span id="score">0</span>
+            </div>
+
+        </div>
+
+        <!-- 遊び方 -->
+        <div id="instruction">
+            風船をねらって発射しよう！
+        </div>
+
+        <!-- 風船を入れる場所 -->
+        <div id="balloonArea"></div>
+
+        <!-- 照準 -->
+        <div id="scope"></div>
+
+        <!-- 発射時の光 -->
+        <div id="shotFlash"></div>
+
+        <!-- カウントダウン -->
+        <div id="countdown"></div>
+
+        <!-- スマホが接続するまでゲーム画面を隠す全画面の背景 -->
+        <div id="connectionBackdrop"></div>
+
+        <!-- スマホ接続パネル -->
+        <div id="pairingPanel">
+
+            <div id="pairingTitle">
+                スマホをつなげよう
+            </div>
+
+            <div id="qrCodeContainer"></div>
+
+            <div id="roomCodeLabel">
+                せつぞくコード
+            </div>
+
+            <div id="roomCodeText">----</div>
+
+            <div id="pairingHint">
+                スマホで下のQRコードを読みとるか、<br>
+                このコードを直接入力してください
+            </div>
+
+            <button
+                id="regenerateRoomButton"
+                type="button"
+            >
+                コードを作り直す
+            </button>
+
+        </div>
+
+        <!-- 接続状況 -->
+        <div id="connectionStatus">
+
+            <div>
+                コントローラー：
+                <span id="firebaseStatus">接続中</span>
+            </div>
+
+            <div>
+                ジャイロ照準：
+                <span id="aimStatus">未受信</span>
+            </div>
+
+            <button
+                id="reconnectButton"
+                type="button"
+                style="display: none;"
+            >
+                再接続する
+            </button>
+
+        </div>
+
+        <!-- 終了時の暗い背景 -->
+        <div id="resultOverlay"></div>
+
+        <!-- 終了メッセージ -->
+        <div id="message"></div>
+
+        <!-- スタートボタン -->
+        <button id="startButton">
+            ゲームスタート
+        </button>
+
+    </main>
+
+    <!--
+        QRコード生成ライブラリ（純粋なJavaScript、依存ライブラリなし）
+        接続コードをスマホで読み取れるQR画像に変換するために使います。
+
+        以前はcdnjs.cloudflare.com上のバージョン1.0.3を読み込んで
+        いましたが、学校や施設のネットワークでcdnjs.cloudflare.comへの
+        アクセスがブロックされている場合、QRコードが一切表示されない
+        原因になっていました。
+        そこで、ライブラリ本体（qrcode-generator 2.0.4）をこのプロジェクト
+        フォルダ内（lib/qrcode.min.js）に同梱し、外部ネットワークに
+        アクセスしなくてもQRコードを生成できるようにしました。
+
+        万一このファイルの読み込みに失敗しても、画面上の文字コードを
+        手入力すれば遊べるので、ゲーム自体は止まりません。
+    -->
+    <script src="lib/qrcode.min.js"></script>
+
+    <!--
+        ?v=1はキャッシュ対策です。
+        GitHub Pagesが古いJavaScriptを表示しにくくなります。
+    -->
+    <script
+        type="module"
+        src="script.js?v=1"
+    ></script>
+
+</body>
+
+</html>
