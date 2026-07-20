@@ -39,7 +39,7 @@ const SENSITIVITY_Y_DEGREES = 35;
 
 /* 傾きと照準の動きが逆に感じる場合はtrueに変更 */
 const MIRROR_X = false;
-const MIRROR_Y = false;
+const MIRROR_Y = true;
 
 /*
    Firebaseへ照準情報を送信する間隔(ミリ秒)。
